@@ -78,14 +78,14 @@
             <div class="bg-white p-6 rounded-xl shadow-xl border-b-4 border-primary transition duration-300 hover:shadow-2xl">
                 <label for="assessor-share" class="text-sm font-medium text-gray-500 block">Regra Principal de Divisão (Individual)</label>
                 <div class="mt-1 flex items-center space-x-2">
-                    <input type="number" id="assessor-share" value="33.33" min="0" max="100" step="0.01" 
+                    <input type="number" id="assessor-share" value="25.00" min="0" max="100" step="0.01" 
                            oninput="handleAssessorShareChange(this.value)"
                            class="input-field w-24 text-center text-3xl md:text-4xl font-bold text-primary focus:ring-primary focus:border-primary" />
                     <span class="text-3xl md:text-4xl font-bold text-primary">%</span>
                 </div>
                 <!-- Novo span para refletir a porcentagem dinamicamente -->
                 <p class="text-xs mt-2 text-gray-400">
-                    <span id="assessor-share-display" class="font-semibold text-primary">33.33%</span> da receita do Acompanhamento Individual vai para o Assessor Titular.
+                    <span id="assessor-share-display" class="font-semibold text-primary">25.00%</span> da receita do Acompanhamento Individual vai para o Assessor Titular.
                 </p>
             </div>
         </section>
@@ -196,7 +196,7 @@
                         <div class="flex items-center justify-between mb-3">
                             <label for="guest-share-percent" class="font-semibold text-blue-800 text-sm md:text-base">Pagamento Convidado:</label>
                             <div class="flex items-center space-x-1">
-                                <input type="number" id="guest-share-percent" value="33.33" min="0" max="100" step="0.01" 
+                                <input type="number" id="guest-share-percent" value="25.00" min="0" max="100" step="0.01" 
                                        oninput="handleGuestShareChange(this.value)"
                                        class="input-field w-20 text-center" />
                                 <span class="text-sm font-bold text-gray-700">%</span>
@@ -240,8 +240,8 @@
             focus: "Produtos e serviços educacionais que utilizam inteligência artificial aplicada ao aprendizado e mentorias para empreendedores, empresas e espaços educacionais.",
             maxMonthlyRevenue: 0, // Será recalculado
             growthPeriodMonths: 18, // Editável pelo usuário
-            assessorRevenueSharePercent: 33.33, // Divisão individual (Assessor Titular)
-            guestPaymentSharePercent: 33.33, // Divisão sessão especial (Convidado)
+            assessorRevenueSharePercent: 25.00, // Divisão individual (Assessor Titular) - INICIADO EM 25%
+            guestPaymentSharePercent: 25.00, // Divisão sessão especial (Convidado) - INICIADO EM 25%
             portfolio: [
                 // Ordem: Ebook -> Online -> Grupo -> Individual (Acompanhamento)
                 { id: 'ebook', name: "E-book interativo com IA", price: 90.00, capacity: 900, unit: "usuários", division: "Não especificada (produto escalável)" },
@@ -431,25 +431,41 @@
 
         /**
          * Manipula a mudança no campo de porcentagem do Assessor Titular (Acompanhamento Individual).
+         * Esta função agora também sincroniza o valor com o Pagamento ao Convidado.
          */
         function handleAssessorShareChange(value) {
             const numValue = parseFloat(value);
             if (!isNaN(numValue) && numValue >= 0 && numValue <= 100) {
                 appState.assessorRevenueSharePercent = numValue;
+                
+                // SINCRONIZAÇÃO: Atualiza o guest share
+                appState.guestPaymentSharePercent = numValue;
+                document.getElementById('guest-share-percent').value = numValue.toFixed(2);
+                
                 // Atualiza o texto de exibição no cartão principal
                 document.getElementById('assessor-share-display').textContent = `${numValue.toFixed(2)}%`;
-                calculateProjections();
+                
+                // Força o recálculo completo e a re-renderização
+                calculateProjections(); 
             }
         }
 
         /**
          * Manipula a mudança no campo de porcentagem de pagamento ao Convidado (Sessão Especial).
+         * Esta função agora também sincroniza o valor com a Regra Principal de Divisão.
          */
         function handleGuestShareChange(value) {
             const numValue = parseFloat(value);
             if (!isNaN(numValue) && numValue >= 0 && numValue <= 100) {
                 appState.guestPaymentSharePercent = numValue;
-                renderSpecialSessionDetails(); // Apenas renderiza os detalhes da sessão, sem recalcular projeções
+
+                // SINCRONIZAÇÃO: Atualiza o assessor share
+                appState.assessorRevenueSharePercent = numValue;
+                document.getElementById('assessor-share').value = numValue.toFixed(2);
+                document.getElementById('assessor-share-display').textContent = `${numValue.toFixed(2)}%`;
+                
+                // Força o recálculo completo e a re-renderização
+                calculateProjections(); // Recalcula tudo e chama renderSpecialSessionDetails()
             }
         }
         
@@ -545,10 +561,10 @@
                 // 1. Injeta o foco da empresa
                 document.getElementById('app-focus').textContent = appState.focus;
                 
-                // 2. Preenche os inputs de estado inicial
+                // 2. Preenche os inputs de estado inicial (25.00%)
                 document.getElementById('growth-period').value = appState.growthPeriodMonths;
-                document.getElementById('assessor-share').value = appState.assessorRevenueSharePercent;
-                document.getElementById('guest-share-percent').value = appState.guestPaymentSharePercent;
+                document.getElementById('assessor-share').value = appState.assessorRevenueSharePercent.toFixed(2);
+                document.getElementById('guest-share-percent').value = appState.guestPaymentSharePercent.toFixed(2);
                 document.getElementById('special-session-participants').value = appState.specialSession.participants; // Novo campo
                 
                 // 3. Renderiza todas as tabelas e calcula as projeções iniciais
