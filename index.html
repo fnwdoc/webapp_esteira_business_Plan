@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Plano de Negócios FNW  Assessoria Esteira</title>
+    <title>Plano de Negócios FNW Assessoria Esteira</title>
     <!-- Carrega o Tailwind CSS CDN -->
     <script src="https://cdn.tailwindcss.com"></script>
     <!-- Configuração do Tailwind para usar a fonte Inter e cores personalizadas -->
@@ -74,11 +74,19 @@
                 <p id="growth-period-summary" class="text-xs mt-2 text-gray-400">Baseado no período de 18 meses.</p>
             </div>
 
-            <!-- Cartão: Foco Estratégico (Fixo) -->
+            <!-- Cartão: Foco Estratégico (Dinâmico) -->
             <div class="bg-white p-6 rounded-xl shadow-xl border-b-4 border-primary transition duration-300 hover:shadow-2xl">
-                <p class="text-sm font-medium text-gray-500">Regra Principal de Divisão (Mentorias)</p>
-                <h2 class="mt-1 text-3xl md:text-4xl font-bold text-primary">1/3</h2>
-                <p class="text-xs mt-2 text-gray-400">Da receita das mentorias vai para o Assessor Titular.</p>
+                <label for="assessor-share" class="text-sm font-medium text-gray-500 block">Regra Principal de Divisão (Individual)</label>
+                <div class="mt-1 flex items-center space-x-2">
+                    <input type="number" id="assessor-share" value="33.33" min="0" max="100" step="0.01" 
+                           oninput="handleAssessorShareChange(this.value)"
+                           class="input-field w-24 text-center text-3xl md:text-4xl font-bold text-primary focus:ring-primary focus:border-primary" />
+                    <span class="text-3xl md:text-4xl font-bold text-primary">%</span>
+                </div>
+                <!-- Novo span para refletir a porcentagem dinamicamente -->
+                <p class="text-xs mt-2 text-gray-400">
+                    <span id="assessor-share-display" class="font-semibold text-primary">33.33%</span> da receita do Acompanhamento Individual vai para o Assessor Titular.
+                </p>
             </div>
         </section>
 
@@ -180,12 +188,34 @@
                     </div>
                 </div>
 
-                <!-- Detalhes da Sessão Especial com Convidado -->
+                <!-- Detalhes da Sessão Especial com Convidado (AGORA DINÂMICO) -->
                 <h4 class="text-xl font-medium text-gray-700 mb-3 border-t pt-4">Detalhes da Sessão Especial em Grupo (Convidados Colaboradores)</h4>
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                     <div class="bg-blue-50 p-4 rounded-lg border border-blue-200">
-                        <p class="font-semibold text-blue-800">Modelo de Divisão por Sessão:</p>
-                        <p class="mt-1 text-sm text-gray-700">A sessão ocorre em meses com 5 semanas. O pagamento ao convidado é de <span id="guest-payment-fraction" class="font-bold text-accent"></span>.</p>
+                        <!-- Input para Pagamento Convidado -->
+                        <div class="flex items-center justify-between mb-3">
+                            <label for="guest-share-percent" class="font-semibold text-blue-800 text-sm md:text-base">Pagamento Convidado:</label>
+                            <div class="flex items-center space-x-1">
+                                <input type="number" id="guest-share-percent" value="33.33" min="0" max="100" step="0.01" 
+                                       oninput="handleGuestShareChange(this.value)"
+                                       class="input-field w-20 text-center" />
+                                <span class="text-sm font-bold text-gray-700">%</span>
+                            </div>
+                        </div>
+
+                        <!-- Input para Participantes da Sessão Especial -->
+                        <div class="flex items-center justify-between mb-3">
+                            <label for="special-session-participants" class="font-semibold text-blue-800 text-sm md:text-base">Número de Participantes da Sessão:</label>
+                            <div class="flex items-center space-x-1">
+                                <input type="number" id="special-session-participants" value="10" min="1" 
+                                       oninput="handleSpecialSessionParticipantsChange(this.value)"
+                                       class="input-field w-20 text-center" />
+                            </div>
+                        </div>
+
+                        <p class="text-sm text-gray-700 border-t pt-2 mt-2">
+                            Baseado no **Preço** do produto "Mentorias em grupo" (<span id="group-price-display" class="font-semibold">...</span>) e nos **participantes acima**.
+                        </p>
                         <div id="special-session-details" class="mt-3 text-sm space-y-1">
                             <!-- Detalhes injetados pelo JavaScript -->
                         </div>
@@ -208,9 +238,10 @@
         let appState = {
             company: "FNW Esteira Assessoria",
             focus: "Produtos e serviços educacionais que utilizam inteligência artificial aplicada ao aprendizado e mentorias para empreendedores, empresas e espaços educacionais.",
-            maxMonthlyRevenue: 230560.00, // Inicial, será recalculado
-            maxIndividualCapacity: 72, 
+            maxMonthlyRevenue: 0, // Será recalculado
             growthPeriodMonths: 18, // Editável pelo usuário
+            assessorRevenueSharePercent: 33.33, // Divisão individual (Assessor Titular)
+            guestPaymentSharePercent: 33.33, // Divisão sessão especial (Convidado)
             portfolio: [
                 // Ordem: Ebook -> Online -> Grupo -> Individual (Acompanhamento)
                 { id: 'ebook', name: "E-book interativo com IA", price: 90.00, capacity: 900, unit: "usuários", division: "Não especificada (produto escalável)" },
@@ -220,15 +251,12 @@
                 // Acompanhamento Individual (Acompanhamento mais avançado/posterior)
                 { id: 'individual', name: "Acompanhamento Individual", price: 1400.00, capacity: 72, unit: "atendimentos/mês", division: "Assessor titular recebe 1/3 da receita" }
             ],
-            // Detalhes fixos da sessão especial
+            // Detalhes da sessão especial (agora com participantes dinâmicos)
             specialSession: {
-                guestPaymentFraction: "1/3 da bilheteria",
+                participants: 10, // Agora dinâmico
                 months: ["Dezembro/2025", "Março/2026", "Maio/2026", "Agosto/2026", "Outubro/2026", "Dezembro/2026"]
             },
         };
-
-        // CONSTANTE DA URL EXTERNA
-        const EXTERNAL_URL = "https://fnwdoc.github.io/webapp_esteira_digital/";
 
         /**
          * Notifica o usuário com uma mensagem temporária no topo da tela.
@@ -296,10 +324,13 @@
                 metadata: {
                     name: name,
                     timestamp: new Date().toISOString(),
-                    appVersion: "1.1.1", // Versão do simulador atualizada
+                    appVersion: "1.3.0", // Versão do simulador atualizada
                 },
                 state: {
                     growthPeriodMonths: appState.growthPeriodMonths,
+                    assessorRevenueSharePercent: appState.assessorRevenueSharePercent,
+                    guestPaymentSharePercent: appState.guestPaymentSharePercent,
+                    specialSessionParticipants: appState.specialSession.participants, // Salva o novo valor dinâmico
                     // Mapeia para salvar apenas ID, preço e capacidade
                     portfolio: appState.portfolio.map(item => ({
                         id: item.id,
@@ -352,8 +383,24 @@
                     // 1. Atualiza o período de crescimento
                     appState.growthPeriodMonths = parseInt(loadedData.state.growthPeriodMonths);
                     document.getElementById('growth-period').value = appState.growthPeriodMonths;
+
+                    // 2. Atualiza as porcentagens de divisão
+                    if (!isNaN(parseFloat(loadedData.state.assessorRevenueSharePercent))) {
+                        appState.assessorRevenueSharePercent = parseFloat(loadedData.state.assessorRevenueSharePercent);
+                        document.getElementById('assessor-share').value = appState.assessorRevenueSharePercent;
+                    }
+                    if (!isNaN(parseFloat(loadedData.state.guestPaymentSharePercent))) {
+                        appState.guestPaymentSharePercent = parseFloat(loadedData.state.guestPaymentSharePercent);
+                        document.getElementById('guest-share-percent').value = appState.guestPaymentSharePercent;
+                    }
+
+                    // 3. Atualiza participantes da Sessão Especial (novo campo)
+                    if (!isNaN(parseInt(loadedData.state.specialSessionParticipants))) {
+                        appState.specialSession.participants = parseInt(loadedData.state.specialSessionParticipants);
+                        document.getElementById('special-session-participants').value = appState.specialSession.participants;
+                    }
                     
-                    // 2. Atualiza preços e capacidades do portfólio
+                    // 4. Atualiza preços e capacidades do portfólio
                     loadedData.state.portfolio.forEach(loadedItem => {
                         const existingItem = appState.portfolio.find(p => p.id === loadedItem.id);
                         if (existingItem) {
@@ -362,7 +409,7 @@
                         }
                     });
 
-                    // 3. Recalcula e renderiza
+                    // 5. Recalcula e renderiza
                     calculateProjections();
                     
                     const name = loadedData.metadata?.name || 'Cenário Desconhecido';
@@ -380,6 +427,41 @@
                 event.target.value = '';
             };
             reader.readAsText(file);
+        }
+
+        /**
+         * Manipula a mudança no campo de porcentagem do Assessor Titular (Acompanhamento Individual).
+         */
+        function handleAssessorShareChange(value) {
+            const numValue = parseFloat(value);
+            if (!isNaN(numValue) && numValue >= 0 && numValue <= 100) {
+                appState.assessorRevenueSharePercent = numValue;
+                // Atualiza o texto de exibição no cartão principal
+                document.getElementById('assessor-share-display').textContent = `${numValue.toFixed(2)}%`;
+                calculateProjections();
+            }
+        }
+
+        /**
+         * Manipula a mudança no campo de porcentagem de pagamento ao Convidado (Sessão Especial).
+         */
+        function handleGuestShareChange(value) {
+            const numValue = parseFloat(value);
+            if (!isNaN(numValue) && numValue >= 0 && numValue <= 100) {
+                appState.guestPaymentSharePercent = numValue;
+                renderSpecialSessionDetails(); // Apenas renderiza os detalhes da sessão, sem recalcular projeções
+            }
+        }
+        
+        /**
+         * Manipula a mudança no campo de participantes da Sessão Especial.
+         */
+        function handleSpecialSessionParticipantsChange(value) {
+            const numValue = parseInt(value);
+            if (!isNaN(numValue) && numValue >= 1) {
+                appState.specialSession.participants = numValue;
+                renderSpecialSessionDetails(); // Apenas renderiza os detalhes da sessão, sem recalcular projeções
+            }
         }
 
         /**
@@ -415,12 +497,18 @@
             // 4. Atualiza o Rodapé da Tabela de Portfólio
             document.getElementById('total-revenue-footer').textContent = formatCurrency(appState.maxMonthlyRevenue);
             document.getElementById('total-revenue-footer').classList.remove('loading-pulse');
+            
+            // 5. Garante que o display de porcentagem no cartão principal esteja atualizado
+            document.getElementById('assessor-share-display').textContent = `${appState.assessorRevenueSharePercent.toFixed(2)}%`;
 
-            // 5. Atualiza a Tabela de Portfólio para refletir as novas receitas brutas
+            // 6. Atualiza a Tabela de Portfólio para refletir as novas receitas brutas
             renderPortfolioTable();
             
-            // 6. Renderiza a nova tabela de projeção mensal dinâmica
+            // 7. Renderiza a nova tabela de projeção mensal dinâmica
             renderDynamicProjectionTable(); 
+
+            // 8. Atualiza os detalhes da sessão especial com base nos novos preços e participantes
+            renderSpecialSessionDetails();
         }
 
         /**
@@ -457,12 +545,14 @@
                 // 1. Injeta o foco da empresa
                 document.getElementById('app-focus').textContent = appState.focus;
                 
-                // 2. Preenche os inputs com o valor inicial do período de crescimento
+                // 2. Preenche os inputs de estado inicial
                 document.getElementById('growth-period').value = appState.growthPeriodMonths;
-
+                document.getElementById('assessor-share').value = appState.assessorRevenueSharePercent;
+                document.getElementById('guest-share-percent').value = appState.guestPaymentSharePercent;
+                document.getElementById('special-session-participants').value = appState.specialSession.participants; // Novo campo
+                
                 // 3. Renderiza todas as tabelas e calcula as projeções iniciais
                 calculateProjections();
-                renderSpecialSessionDetails();
                 
                 // 4. Configura o estado inicial da interface
                 showSection('portfolio');
@@ -481,6 +571,12 @@
             tbody.innerHTML = ''; // Limpa o corpo da tabela
 
             appState.portfolio.forEach(item => {
+                // Atualiza a descrição da divisão do Acompanhamento Individual para refletir a %
+                let divisionText = item.division;
+                if (item.id === 'individual') {
+                    divisionText = `Assessor titular recebe ${appState.assessorRevenueSharePercent.toFixed(2)}% da receita`;
+                }
+
                 const row = document.createElement('tr');
                 row.className = 'hover:bg-gray-50';
                 row.innerHTML = `
@@ -503,7 +599,7 @@
                     <td class="px-6 py-4 whitespace-nowrap text-sm font-bold text-secondary text-right">${formatCurrency(item.maxRevenue)}</td>
                     
                     <!-- Divisão -->
-                    <td class="px-6 py-4 whitespace-normal text-sm text-gray-600">${item.division}</td>
+                    <td class="px-6 py-4 whitespace-normal text-sm text-gray-600">${divisionText}</td>
                 `;
                 tbody.appendChild(row);
             });
@@ -547,13 +643,10 @@
                     currentClients[item.id] += monthlyIncrement;
 
                     // Garante que o último mês atinja exatamente a capacidade máxima
-                    // Usamos Math.ceil no último mês para evitar erros de ponto flutuante, mas a lógica de incremento já resolve a maior parte.
-                    if (month === appState.growthPeriodMonths) {
-                        currentClients[item.id] = item.capacity;
-                    }
+                    // Usamos Math.min para não ultrapassar a capacidade, corrigindo o arredondamento
+                    const clientsInMonth = Math.min(item.capacity, currentClients[item.id]);
 
                     // Calcula a receita gerada pelos clientes acumulados (arredondando para 1 casa decimal para clientes, mas usando o valor real para receita)
-                    const clientsInMonth = Math.min(item.capacity, currentClients[item.id]);
                     monthlyRevenue += clientsInMonth * item.price;
                 });
                 
@@ -591,27 +684,38 @@
 
 
         /**
-         * Renderiza os detalhes da sessão especial com convidado (Dados fixos do plano original).
+         * Renderiza os detalhes da sessão especial com convidado (AGORA DINÂMICO).
          */
         function renderSpecialSessionDetails() {
             const detailsDiv = document.getElementById('special-session-details');
             const monthsList = document.getElementById('special-session-months');
+            const groupProduct = appState.portfolio.find(p => p.id === 'group');
+
+            // Preço e participantes (O prego vem do produto 'group', os participantes vêm do input da seção)
+            const price = groupProduct ? groupProduct.price : 0;
+            const participants = appState.specialSession.participants; 
+
+            // Cálculo da Receita Bruta da Sessão
+            const grossRevenue = price * participants; 
+
+            // Cálculo do Pagamento ao Convidado (Dinâmico)
+            const guestShareDecimal = appState.guestPaymentSharePercent / 100;
+            const guestPayment = grossRevenue * guestShareDecimal; 
+
+            // Cálculo da Receita Líquida (o restante)
+            const netRevenue = grossRevenue - guestPayment; 
+
+            // Atualiza o display do preço de grupo
+            document.getElementById('group-price-display').textContent = formatCurrency(price);
             
-            document.getElementById('guest-payment-fraction').textContent = appState.specialSession.guestPaymentFraction;
-
-            // Os valores da sessão especial são baseados no preço original (R$ 762/participante)
-            const price = 762.00;
-            const participants = 10;
-            const grossRevenue = price * participants; // 7620
-            const guestPayment = grossRevenue / 3; // 2540
-            const netRevenue = grossRevenue - guestPayment; // 5080
-
+            // Atualiza a visualização dos detalhes da sessão
             detailsDiv.innerHTML = `
-                <p>Receita Bruta da Sessão (10 participantes @ ${formatCurrency(price)}): <span class="font-bold text-gray-900">${formatCurrency(grossRevenue)}</span></p>
-                <p>Pagamento ao Convidado Colaborador (1/3): <span class="font-bold text-gray-700">${formatCurrency(guestPayment)}</span></p>
-                <p>Receita Líquida para Assessores (2/3): <span class="font-bold text-secondary">${formatCurrency(netRevenue)}</span></p>
+                <p>Receita Bruta da Sessão (${participants} participantes @ ${formatCurrency(price)}): <span class="font-bold text-gray-900">${formatCurrency(grossRevenue)}</span></p>
+                <p>Pagamento ao Convidado Colaborador (${appState.guestPaymentSharePercent.toFixed(2)}%): <span class="font-bold text-gray-700">${formatCurrency(guestPayment)}</span></p>
+                <p>Receita Líquida para Assessores (${(100 - appState.guestPaymentSharePercent).toFixed(2)}%): <span class="font-bold text-secondary">${formatCurrency(netRevenue)}</span></p>
             `;
 
+            // Renderiza a lista de meses (fixa)
             monthsList.innerHTML = '';
             appState.specialSession.months.forEach(month => {
                 const li = document.createElement('li');
