@@ -3,649 +3,320 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Plano de Negócios FNW  Assessoria Esteira</title>
-    <!-- Carrega o Tailwind CSS CDN -->
+    <title>Plano de Negócios FNW Assessoria Esteira</title>
     <script src="https://cdn.tailwindcss.com"></script>
-    <!-- Configuração do Tailwind para usar a fonte Inter e cores personalizadas -->
     <script>
         tailwind.config = {
             theme: {
                 extend: {
                     colors: {
-                        'primary': '#1e3a8a', // Azul escuro
-                        'secondary': '#3b82f6', // Azul claro
-                        'accent': '#f59e0b', // Laranja (reservado para destaque crítico)
-                        'background': '#f1f5f9', // Cinza claro
+                        'primary': '#1e3a8a',
+                        'secondary': '#3b82f6',
+                        'accent': '#f59e0b',
+                        'background': '#f1f5f9',
                     },
-                    fontFamily: {
-                        sans: ['Inter', 'sans-serif'],
-                    }
+                    fontFamily: { sans: ['Inter', 'sans-serif'] }
                 }
             }
         }
     </script>
     <style>
-        /* Estilo para a animação de carregamento */
-        @keyframes pulse-once {
-            0% { opacity: 0.5; transform: scale(0.95); }
-            50% { opacity: 1; transform: scale(1); }
-            100% { opacity: 0.5; transform: scale(0.95); }
-        }
-        .loading-pulse {
-            animation: pulse-once 1.5s ease-in-out infinite;
-        }
-        /* Estilo básico para inputs */
-        .input-field {
-            @apply p-1 w-full bg-gray-50 border border-gray-300 rounded-md text-sm text-right focus:ring-secondary focus:border-secondary transition duration-150;
-        }
+        .input-field { @apply p-2 w-full bg-white border border-gray-300 rounded text-sm focus:ring-2 focus:ring-secondary focus:border-secondary outline-none transition-all; }
+        input::-webkit-outer-spin-button, input::-webkit-inner-spin-button { -webkit-appearance: none; margin: 0; }
+        .col-nome { width: 30%; }
+        .col-preco { width: 15%; }
+        .col-cap { width: 15%; }
+        .col-un { width: 15%; }
+        .col-total { width: 25%; }
     </style>
-    <!-- Carrega a fonte Inter -->
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@100..900&display=swap" rel="stylesheet">
 </head>
 <body class="bg-background min-h-screen p-4 md:p-8 font-sans">
 
-    <!-- Simple Notification Bar (for saving/loading feedback) -->
     <div id="notification-bar" class="fixed top-0 left-1/2 transform -translate-x-1/2 mt-4 p-3 rounded-lg shadow-xl text-white font-semibold hidden transition-opacity duration-300 z-50">
         <span id="notification-text"></span>
     </div>
 
-    <!-- Container Principal do Dashboard -->
     <div class="max-w-7xl mx-auto">
         <header class="text-center mb-10 p-6 bg-white rounded-xl shadow-lg">
-            <h1 class="text-3xl md:text-4xl font-extrabold text-primary">FNW Assessoria Esteira</h1>
-            <p class="mt-2 text-lg text-gray-600">Simulador de Plano de Negócios e Projeções Financeiras</p>
-            <p id="app-focus" class="mt-4 text-sm text-gray-500 italic"></p>
+            <h1 class="text-3xl font-extrabold text-primary">FNW Assessoria Esteira</h1>
+            <p class="mt-2 text-gray-600 italic">Foco em IA e Mentorias Educacionais</p>
         </header>
 
-        <!-- Seção de Métricas Chave -->
-        <section id="key-metrics" class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-10">
-            <!-- Cartão: Receita Máxima Mensal (Calculada) -->
-            <div class="bg-white p-6 rounded-xl shadow-xl border-b-4 border-secondary transition duration-300 hover:shadow-2xl">
-                <p class="text-sm font-medium text-gray-500">Potencial de Receita Mensal MÁXIMA (Calculado)</p>
-                <h2 id="max-revenue" class="mt-1 text-3xl md:text-4xl font-bold text-secondary loading-pulse">...</h2>
-                <p class="text-xs mt-2 text-gray-400">Soma da capacidade máxima de todos os produtos.</p>
+        <section class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-10">
+            <div class="bg-white p-6 rounded-xl shadow-xl border-b-4 border-secondary transition hover:shadow-2xl">
+                <p class="text-sm font-medium text-gray-500 uppercase">Receita Mensal MÁXIMA</p>
+                <h2 id="max-revenue" class="mt-1 text-3xl font-bold text-secondary">R$ 0,00</h2>
             </div>
-
-            <!-- Cartão: Meta de Crescimento Mensal (Calculada) -->
-            <div class="bg-white p-6 rounded-xl shadow-xl border-b-4 border-accent transition duration-300 hover:shadow-2xl">
-                <p class="text-sm font-medium text-gray-500">Meta de Crescimento Mensal (Receita)</p>
-                <!-- Usa 'accent' para manter o destaque, mas evita a repetição em outros elementos de dados -->
-                <h2 id="monthly-growth-target" class="mt-1 text-3xl md:text-4xl font-bold text-accent loading-pulse">...</h2>
-                <p id="growth-period-summary" class="text-xs mt-2 text-gray-400">Baseado no período de 18 meses.</p>
+            <div class="bg-white p-6 rounded-xl shadow-xl border-b-4 border-accent transition hover:shadow-2xl">
+                <p class="text-sm font-medium text-gray-500 uppercase">Meta de Crescimento/Mês</p>
+                <h2 id="monthly-growth-target" class="mt-1 text-3xl font-bold text-accent">R$ 0,00</h2>
             </div>
-
-            <!-- Cartão: Foco Estratégico (Fixo) -->
-            <div class="bg-white p-6 rounded-xl shadow-xl border-b-4 border-primary transition duration-300 hover:shadow-2xl">
-                <p class="text-sm font-medium text-gray-500">Regra Principal de Divisão (Mentorias)</p>
-                <h2 class="mt-1 text-3xl md:text-4xl font-bold text-primary">1/3</h2>
-                <p class="text-xs mt-2 text-gray-400">Da receita das mentorias vai para o Assessor Titular.</p>
+            <div class="bg-white p-6 rounded-xl shadow-xl border-b-4 border-primary transition hover:shadow-2xl">
+                <label class="text-sm font-medium text-gray-500 block uppercase italic">Regra de Divisão Principal (%)</label>
+                <div class="mt-1 flex items-center space-x-2">
+                    <input type="number" id="assessor-share" value="25.00" step="0.01" oninput="handleAssessorShareChange(this.value)" class="bg-transparent text-3xl font-bold text-primary w-24 outline-none" />
+                    <span class="text-3xl font-bold text-primary">%</span>
+                </div>
             </div>
         </section>
 
-        <!-- Seção de Detalhes (Portfólio e Projeção) -->
-        <div class="bg-white p-6 rounded-xl shadow-xl">
-            <div class="flex flex-col md:flex-row space-y-4 md:space-y-0 md:space-x-4 mb-6 border-b pb-4">
-                <button onclick="showSection('portfolio')" class="tab-button bg-primary text-white px-6 py-3 rounded-lg font-semibold shadow-md hover:bg-secondary transition duration-300" data-section="portfolio">Portfólio & Receita Máxima (EDITAR)</button>
-                <button onclick="showSection('growth')" class="tab-button bg-gray-200 text-gray-700 px-6 py-3 rounded-lg font-semibold hover:bg-gray-300 transition duration-300" data-section="growth">Projeção & Divisão (AJUSTAR)</button>
+        <div class="bg-white rounded-xl shadow-xl overflow-hidden">
+            <div class="flex bg-gray-50 border-b">
+                <button onclick="showSection('portfolio')" class="tab-button px-8 py-4 font-bold text-sm uppercase tracking-wider border-r border-t-4 border-t-transparent" data-section="portfolio">Portfólio (Editar)</button>
+                <button onclick="showSection('growth')" class="tab-button px-8 py-4 font-bold text-sm uppercase tracking-wider border-r border-t-4 border-t-transparent" data-section="growth">Projeção & Divisão</button>
             </div>
 
-            <!-- 1. Portfólio e Receita Máxima (Tabela 1 e 3) -->
-            <div id="portfolio-section" class="content-section">
-                <!-- Título e Link/Botão de Abertura de Janela -->
+            <div id="portfolio-section" class="content-section p-6">
                 <div class="flex items-center justify-between mb-4">
-                    <h3 class="text-2xl font-semibold text-primary">Portfólio de Produtos e Serviços</h3>
+                    <h3 class="text-xl font-bold text-primary uppercase tracking-tight">Configuração da Esteira de Produtos</h3>
                     
-                    <!-- BOTÃO/LINK CORRIGIDO -->
-                    <a href="https://fnwdoc.github.io/webapp_esteira_digital/" target="_blank" rel="noopener noreferrer"
-                       class="flex items-center space-x-1 bg-gray-100 text-gray-700 text-sm px-3 py-1 rounded-lg border hover:bg-gray-200 transition duration-150 shadow-sm font-semibold">
+                    <a href="https://fnwdoc.github.io/webapp_esteira_digital/" target="_blank" rel="noopener noreferrer" 
+                       class="flex items-center space-x-2 bg-gray-100 text-gray-700 text-xs px-4 py-2 rounded-lg border hover:bg-gray-200 transition shadow-sm font-bold uppercase">
                         <span>Abrir Esteira Digital</span>
-                        <!-- Ícone de link externo (Arrow up right) - usando SVG para evitar dependência -->
                         <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4m-4-7a3 3 0 00-3-3H9a3 3 0 00-3 3v8a3 3 0 003 3h8a3 3 0 003-3v-5m-4 0l-5 5"></path>
                         </svg>
                     </a>
-                    <!-- FIM DO BOTÃO/LINK CORRIGIDO -->
-
                 </div>
 
-                <p class="text-sm text-gray-600 mb-4 italic">Altere o Preço e a Capacidade para recalcular a Receita Bruta Máxima e a Receita Total.</p>
-                <div class="overflow-x-auto">
-                    <table class="min-w-full divide-y divide-gray-200 rounded-lg shadow-sm">
-                        <thead class="bg-gray-50">
+                <div class="overflow-x-auto border rounded-lg">
+                    <table class="min-w-full table-fixed divide-y divide-gray-200">
+                        <thead class="bg-gray-100 uppercase text-[10px] font-bold text-gray-600">
                             <tr>
-                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Produto/Serviço</th>
-                                <th class="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">Preço (R$)</th>
-                                <th class="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">Capacidade Máxima</th>
-                                <th class="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">Receita Bruta (Máxima)</th>
-                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Divisão de Receita</th>
+                                <th class="col-nome px-4 py-3 text-left border-r text-xs">Produto/Serviço</th>
+                                <th class="col-preco px-4 py-3 text-center border-r text-xs">Preço (R$)</th>
+                                <th class="col-cap px-4 py-3 text-center border-r text-xs">Capacidade</th>
+                                <th class="col-un px-4 py-3 text-center border-r text-xs">Unidade</th>
+                                <th class="col-total px-4 py-3 text-right text-primary text-xs">Receita Bruta (Máx)</th>
                             </tr>
                         </thead>
-                        <tbody id="portfolio-table-body" class="bg-white divide-y divide-gray-200">
-                            <!-- Conteúdo injetado pelo JavaScript -->
-                        </tbody>
-                        <tfoot>
-                            <tr class="bg-primary/10 border-t-2 border-primary">
-                                <td class="px-6 py-4 font-extrabold text-primary">RECEITA TOTAL MENSAL PROJETADA</td>
-                                <td colspan="2" class="px-6 py-4 text-sm text-gray-600 italic text-right">Soma do potencial máximo</td>
-                                <td id="total-revenue-footer" class="px-6 py-4 text-xl font-extrabold text-primary text-right loading-pulse">...</td>
-                                <td class="px-6 py-4"></td>
+                        <tbody id="portfolio-table-body" class="bg-white divide-y divide-gray-200"></tbody>
+                        <tfoot class="bg-primary/10 border-t-2 border-primary text-primary font-black">
+                            <tr>
+                                <td colspan="4" class="px-6 py-4 text-right uppercase">Receita Total Mensal Projetada:</td>
+                                <td id="total-revenue-footer" class="px-6 py-4 text-xl text-right">R$ 0,00</td>
                             </tr>
                         </tfoot>
                     </table>
                 </div>
             </div>
 
-            <!-- 2. Projeção de Crescimento e Divisão (Tabela 2 e Detalhes) -->
-            <div id="growth-section" class="content-section hidden">
-                <h3 class="text-2xl font-semibold text-primary mb-4">Análise e Projeção de Crescimento Linear</h3>
-
-                <!-- Input para Período de Crescimento, Salvar e Carregar Cenário -->
-                <div class="mb-6 p-4 bg-yellow-50 rounded-lg border border-yellow-200 max-w-2xl">
-                    <label for="growth-period" class="block text-sm font-medium text-gray-700 mb-1">Período para Atingir a Capacidade Máxima (meses):</label>
-                    <input type="number" id="growth-period" value="18" min="3" max="60" oninput="handleGrowthPeriodChange(this.value)" class="input-field w-32 text-center" />
-                    <p class="text-xs mt-2 text-gray-500">O plano inicial prevê de 12 a 18 meses para atingir a capacidade máxima.</p>
-
-                    <div class="mt-4 flex space-x-4">
-                        <button onclick="saveScenarioPrompt()" class="bg-green-600 text-white px-4 py-2 rounded-lg text-sm font-semibold hover:bg-green-700 transition duration-300 shadow-md">
-                            Salvar Cenário (JSON)
-                        </button>
-                        <button onclick="document.getElementById('file-input').click()" class="bg-gray-600 text-white px-4 py-2 rounded-lg text-sm font-semibold hover:bg-gray-700 transition duration-300 shadow-md">
-                            Carregar Cenário
-                        </button>
-                        <!-- Campo de input de arquivo escondido para carregar -->
-                        <input type="file" id="file-input" accept=".json" onchange="loadScenario(event)" class="hidden">
-                    </div>
-                </div>
-                
-                <!-- Tabela de Projeção Mensal Dinâmica -->
-                <div class="mb-8 mt-6">
-                    <h4 class="text-xl font-medium text-gray-700 mb-3">Projeção de Clientes Acumulados e Receita Mensal (Mês a Mês)</h4>
-                    <div class="overflow-x-auto">
-                        <table class="min-w-full divide-y divide-gray-200 rounded-lg shadow-sm">
-                            <thead class="bg-primary text-white">
-                                <tr>
-                                    <th class="px-3 py-3 text-left text-xs font-medium uppercase tracking-wider">Mês</th>
-                                    <th class="px-3 py-3 text-right text-xs font-medium uppercase tracking-wider">E-book (Usuários)</th>
-                                    <th class="px-3 py-3 text-right text-xs font-medium uppercase tracking-wider">Aulas Online (Usuários)</th>
-                                    <th class="px-3 py-3 text-right text-xs font-medium uppercase tracking-wider">Grupo (Clientes)</th>
-                                    <th class="px-3 py-3 text-right text-xs font-medium uppercase tracking-wider">Individual (Clientes)</th>
-                                    <!-- A cor do cabeçalho de Receita agora segue o tom primário, mas mais claro -->
-                                    <th class="px-3 py-3 text-right text-sm font-medium uppercase tracking-wider bg-primary/30">Receita Acumulada (R$)</th>
-                                </tr>
-                            </thead>
-                            <tbody id="dynamic-projection-table-body" class="bg-white divide-y divide-gray-200">
-                                <!-- Conteúdo dinâmico injetado pelo JavaScript -->
-                            </tbody>
-                        </table>
-                    </div>
-                </div>
-
-                <!-- Detalhes da Sessão Especial com Convidado -->
-                <h4 class="text-xl font-medium text-gray-700 mb-3 border-t pt-4">Detalhes da Sessão Especial em Grupo (Convidados Colaboradores)</h4>
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    <div class="bg-blue-50 p-4 rounded-lg border border-blue-200">
-                        <p class="font-semibold text-blue-800">Modelo de Divisão por Sessão:</p>
-                        <p class="mt-1 text-sm text-gray-700">A sessão ocorre em meses com 5 semanas. O pagamento ao convidado é de <span id="guest-payment-fraction" class="font-bold text-accent"></span>.</p>
-                        <div id="special-session-details" class="mt-3 text-sm space-y-1">
-                            <!-- Detalhes injetados pelo JavaScript -->
+            <div id="growth-section" class="content-section p-6 hidden">
+                <div class="mb-8 grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div class="p-4 bg-yellow-50 rounded-lg border border-yellow-200">
+                        <label class="block text-sm font-bold text-gray-700 mb-2 uppercase">Período para Escala (Meses):</label>
+                        <div class="flex items-center gap-3">
+                            <input type="number" id="growth-period" value="18" oninput="handleGrowthPeriodChange(this.value)" class="w-24 p-2 border rounded font-bold text-center" />
+                            <span class="text-sm text-gray-600 font-medium tracking-wide">Meses</span>
+                        </div>
+                        <div class="mt-4 flex gap-2">
+                            <button onclick="saveScenario()" class="bg-green-600 text-white px-3 py-2 rounded text-xs font-bold uppercase shadow hover:bg-green-700">Salvar Plano</button>
+                            <button onclick="document.getElementById('file-input').click()" class="bg-gray-600 text-white px-3 py-2 rounded text-xs font-bold uppercase shadow hover:bg-gray-700">Carregar Plano</button>
+                            <input type="file" id="file-input" accept=".json" onchange="loadScenario(event)" class="hidden">
                         </div>
                     </div>
-                    <!-- Manteve o verde/amarelo para "Meses Previstos", que é um destaque informacional, não numérico -->
-                    <div class="bg-green-50 p-4 rounded-lg border border-green-200">
-                        <p class="font-semibold text-green-800">Meses Previstos para Sessões Especiais (2025/2026):</p>
-                        <ul id="special-session-months" class="mt-1 text-sm list-disc list-inside space-y-1">
-                            <!-- Meses injetados pelo JavaScript -->
-                        </ul>
+
+                    <div class="p-4 bg-blue-50 rounded-lg border border-blue-200">
+                        <h4 class="font-bold text-blue-900 uppercase text-xs mb-3 italic">Detalhes Sessão Especial</h4>
+                        <div class="space-y-3">
+                            <div class="flex justify-between items-center">
+                                <span class="text-sm font-medium">Participantes Previstos:</span>
+                                <input type="number" id="special-session-participants" value="10" oninput="handleSpecialSessionChange()" class="w-16 p-1 border rounded text-center font-bold text-blue-800" />
+                            </div>
+                            <div class="flex justify-between items-center">
+                                <span class="text-sm font-medium">Divisão Convidado:</span>
+                                <div class="flex items-center gap-1">
+                                    <input type="number" id="guest-share-percent" value="25.00" oninput="handleGuestShareChange(this.value)" class="w-16 p-1 border rounded text-center font-bold text-blue-800" />
+                                    <span class="font-bold text-blue-800">%</span>
+                                </div>
+                            </div>
+                        </div>
+                        <div id="special-session-details" class="mt-4 p-2 bg-white rounded border border-blue-100 text-xs text-gray-700 space-y-1"></div>
                     </div>
                 </div>
 
+                <div class="overflow-x-auto border rounded-lg mb-8">
+                    <table class="min-w-full divide-y divide-gray-200">
+                        <thead id="projection-header" class="bg-primary text-white text-[10px] uppercase"></thead>
+                        <tbody id="dynamic-projection-table-body" class="divide-y divide-gray-100 text-sm"></tbody>
+                    </table>
+                </div>
+
+                <div class="bg-green-50 p-4 rounded-lg border border-green-200 shadow-inner">
+                    <p class="font-bold text-green-800 uppercase text-[10px] mb-3 tracking-widest">Cronograma de Sessões Especiais:</p>
+                    <ul id="special-session-months" class="grid grid-cols-2 md:grid-cols-3 gap-3 text-xs text-green-700 font-bold list-none"></ul>
+                </div>
             </div>
         </div>
     </div>
 
     <script>
-        // ESTADO GLOBAL DO APLICATIVO
         let appState = {
-            company: "FNW Esteira Assessoria",
-            focus: "Produtos e serviços educacionais que utilizam inteligência artificial aplicada ao aprendizado e mentorias para empreendedores, empresas e espaços educacionais.",
-            maxMonthlyRevenue: 230560.00, // Inicial, será recalculado
-            maxIndividualCapacity: 72, 
-            growthPeriodMonths: 18, // Editável pelo usuário
+            growthPeriodMonths: 18,
+            assessorRevenueSharePercent: 25.00,
+            guestPaymentSharePercent: 25.00,
+            specialParticipants: 10,
+            specialMonths: ["Dezembro / 2025", "Março / 2026", "Maio / 2026", "Agosto / 2026", "Outubro / 2026", "Dezembro / 2026"],
             portfolio: [
-                // Ordem: Ebook -> Online -> Grupo -> Individual (Acompanhamento)
-                { id: 'ebook', name: "E-book interativo com IA", price: 90.00, capacity: 900, unit: "usuários", division: "Não especificada (produto escalável)" },
-                { id: 'online', name: "Acesso a aulas e ferramentas online", price: 356.00, capacity: 60, unit: "usuários", division: "Não especificada" },
-                // Mentoria em Grupo (Primeiro na esteira de acompanhamento)
-                { id: 'group', name: "Mentorias em grupo (R$ 762/participante)", price: 762.00, capacity: 40, unit: "participantes/mês", division: "Distribuição rotativa entre 3 assessores" },
-                // Acompanhamento Individual (Acompanhamento mais avançado/posterior)
-                { id: 'individual', name: "Acompanhamento Individual", price: 1400.00, capacity: 72, unit: "atendimentos/mês", division: "Assessor titular recebe 1/3 da receita" }
-            ],
-            // Detalhes fixos da sessão especial
-            specialSession: {
-                guestPaymentFraction: "1/3 da bilheteria",
-                months: ["Dezembro/2025", "Março/2026", "Maio/2026", "Agosto/2026", "Outubro/2026", "Dezembro/2026"]
-            },
+                { id: 'p1', name: "E-book interativo com IA", price: 90.00, capacity: 900, unit: "vendas" },
+                { id: 'p2', name: "Aulas Online", price: 356.00, capacity: 60, unit: "alunos" },
+                { id: 'p3', name: "Mentorias em Grupo", price: 762.00, capacity: 40, unit: "participantes" },
+                { id: 'p4', name: "Acompanhamento Individual", price: 1400.00, capacity: 72, unit: "clientes" }
+            ]
         };
 
-        // CONSTANTE DA URL EXTERNA
-        const EXTERNAL_URL = "https://fnwdoc.github.io/webapp_esteira_digital/";
+        const formatCurrency = (v) => new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(v);
 
-        /**
-         * Notifica o usuário com uma mensagem temporária no topo da tela.
-         * @param {string} message A mensagem a ser exibida.
-         * @param {string} type O tipo de mensagem ('success', 'error', 'info').
-         */
-        function alertMessage(message, type = 'info') {
-            const bar = document.getElementById('notification-bar');
-            const text = document.getElementById('notification-text');
-            
-            // Set colors based on type
-            bar.classList.remove('bg-red-600', 'bg-green-600', 'bg-blue-600');
-            if (type === 'success') {
-                bar.classList.add('bg-green-600');
-            } else if (type === 'error') {
-                bar.classList.add('bg-red-600');
-            } else {
-                bar.classList.add('bg-blue-600');
-            }
-
-            text.textContent = message;
-            bar.classList.remove('hidden');
-            bar.style.opacity = '1';
-
-            // Hide after 5 seconds
-            setTimeout(() => {
-                bar.style.opacity = '0';
-                setTimeout(() => {
-                    bar.classList.add('hidden');
-                }, 300); // Match transition duration
-            }, 5000);
-        }
-
-        /**
-         * Formata um número para o padrão monetário brasileiro (R$ X.XXX,XX).
-         * @param {number} value O valor numérico a ser formatado.
-         * @returns {string} O valor formatado como string monetária.
-         */
-        const formatCurrency = (value) => {
-            return new Intl.NumberFormat('pt-BR', {
-                style: 'currency',
-                currency: 'BRL'
-            }).format(value);
-        };
-
-        /**
-         * Inicia o prompt para salvar o cenário.
-         */
-        function saveScenarioPrompt() {
-            const scenarioName = prompt("Insira um nome para o cenário (ex: 'Cenário Otimista V2'):");
-            if (scenarioName) {
-                saveScenario(scenarioName);
-            } else if (scenarioName === "") {
-                alertMessage("O nome do cenário não pode ser vazio.", 'error');
-            }
-        }
-
-        /**
-         * Salva o cenário atual em um arquivo JSON para download.
-         * @param {string} name O nome do cenário fornecido pelo usuário.
-         */
-        function saveScenario(name) {
-            // Clona apenas os dados mutáveis necessários do appState
-            const scenarioData = {
-                metadata: {
-                    name: name,
-                    timestamp: new Date().toISOString(),
-                    appVersion: "1.1.1", // Versão do simulador atualizada
-                },
-                state: {
-                    growthPeriodMonths: appState.growthPeriodMonths,
-                    // Mapeia para salvar apenas ID, preço e capacidade
-                    portfolio: appState.portfolio.map(item => ({
-                        id: item.id,
-                        price: item.price,
-                        capacity: item.capacity
-                    }))
-                }
-            };
-
-            const json = JSON.stringify(scenarioData, null, 2);
-            const blob = new Blob([json], { type: 'application/json' });
-            const url = URL.createObjectURL(blob);
-            
-            const a = document.createElement('a');
-            a.href = url;
-            
-            // Formata o nome do arquivo: NomeCenario_AAAAMMDD_HHMM.json
-            const date = new Date();
-            const formattedDate = date.toISOString().slice(0, 10).replace(/-/g, '') + '_' + date.toTimeString().slice(0, 5).replace(/:/g, '');
-            const safeName = name.replace(/[^a-z0-9]/gi, '_').toLowerCase();
-            a.download = `${safeName}_${formattedDate}.json`;
-            
-            document.body.appendChild(a);
-            a.click();
-            document.body.removeChild(a);
-            
-            URL.revokeObjectURL(url);
-            alertMessage(`Cenário '${name}' salvo com sucesso!`, 'success');
-        }
-
-        /**
-         * Carrega um cenário a partir de um arquivo JSON selecionado pelo usuário.
-         * @param {Event} event O evento de mudança do input file.
-         */
-        function loadScenario(event) {
-            const file = event.target.files[0];
-            if (!file) return;
-
-            const reader = new FileReader();
-            reader.onload = (e) => {
-                try {
-                    const content = e.target.result;
-                    const loadedData = JSON.parse(content);
-
-                    if (!loadedData.state || !loadedData.state.portfolio || isNaN(parseInt(loadedData.state.growthPeriodMonths))) {
-                        alertMessage("Erro ao carregar: Arquivo JSON inválido ou incompleto.", 'error');
-                        return;
-                    }
-                    
-                    // 1. Atualiza o período de crescimento
-                    appState.growthPeriodMonths = parseInt(loadedData.state.growthPeriodMonths);
-                    document.getElementById('growth-period').value = appState.growthPeriodMonths;
-                    
-                    // 2. Atualiza preços e capacidades do portfólio
-                    loadedData.state.portfolio.forEach(loadedItem => {
-                        const existingItem = appState.portfolio.find(p => p.id === loadedItem.id);
-                        if (existingItem) {
-                            existingItem.price = parseFloat(loadedItem.price);
-                            existingItem.capacity = parseInt(loadedItem.capacity);
-                        }
-                    });
-
-                    // 3. Recalcula e renderiza
-                    calculateProjections();
-                    
-                    const name = loadedData.metadata?.name || 'Cenário Desconhecido';
-                    alertMessage(`Cenário '${name}' carregado com sucesso!`, 'success');
-                    
-                } catch (error) {
-                    console.error("Erro ao processar o arquivo:", error);
-                    alertMessage("Erro ao carregar o arquivo. Certifique-se de que é um JSON válido.", 'error');
-                }
-                // Limpar o input file para que o mesmo arquivo possa ser carregado novamente
-                event.target.value = ''; 
-            };
-            reader.onerror = () => {
-                alertMessage("Não foi possível ler o arquivo.", 'error');
-                event.target.value = '';
-            };
-            reader.readAsText(file);
-        }
-
-        /**
-         * Recalcula a Receita Máxima Mensal Total e a Meta de Crescimento.
-         */
-        function calculateProjections() {
-            let totalRevenue = 0;
-            
-            // 1. Recalcula a Receita Bruta Máxima para cada item do portfólio
-            appState.portfolio.forEach(item => {
-                // Preço * Capacidade
-                item.maxRevenue = item.price * item.capacity;
-                totalRevenue += item.maxRevenue;
-            });
-
-            appState.maxMonthlyRevenue = totalRevenue;
-
-            // 2. Recalcula a Meta de Crescimento Mensal (assumindo crescimento linear até Rmax)
-            let monthlyGrowthTarget = 0;
-            if (appState.growthPeriodMonths > 0) {
-                monthlyGrowthTarget = totalRevenue / appState.growthPeriodMonths;
-            }
-
-            // 3. Atualiza o painel principal (Key Metrics)
-            document.getElementById('max-revenue').textContent = formatCurrency(appState.maxMonthlyRevenue);
-            document.getElementById('max-revenue').classList.remove('loading-pulse');
-
-            document.getElementById('monthly-growth-target').textContent = formatCurrency(monthlyGrowthTarget);
-            document.getElementById('monthly-growth-target').classList.remove('loading-pulse');
-            
-            document.getElementById('growth-period-summary').textContent = `Baseado no período de ${appState.growthPeriodMonths} meses.`;
-
-            // 4. Atualiza o Rodapé da Tabela de Portfólio
-            document.getElementById('total-revenue-footer').textContent = formatCurrency(appState.maxMonthlyRevenue);
-            document.getElementById('total-revenue-footer').classList.remove('loading-pulse');
-
-            // 5. Atualiza a Tabela de Portfólio para refletir as novas receitas brutas
-            renderPortfolioTable();
-            
-            // 6. Renderiza a nova tabela de projeção mensal dinâmica
-            renderDynamicProjectionTable(); 
-        }
-
-        /**
-         * Manipula a mudança nos campos de input (Preço e Capacidade).
-         */
         function handleInputChange(id, field, value) {
-            const numValue = parseFloat(value);
-            if (!isNaN(numValue) && numValue >= 0) {
-                const item = appState.portfolio.find(p => p.id === id);
-                if (item) {
-                    item[field] = numValue;
-                    calculateProjections(); // Recalcula tudo
+            const item = appState.portfolio.find(p => p.id === id);
+            if (item) {
+                if (field === 'price' || field === 'capacity') {
+                    item[field] = parseFloat(value) || 0;
+                } else {
+                    item[field] = value;
                 }
-            }
-        }
-        
-        /**
-         * Manipula a mudança no campo de Período de Crescimento.
-         */
-        function handleGrowthPeriodChange(value) {
-            const numValue = parseInt(value);
-            if (!isNaN(numValue) && numValue > 0) {
-                appState.growthPeriodMonths = numValue;
-                calculateProjections(); // Recalcula a meta de crescimento
+                updateAll();
             }
         }
 
-
-        /**
-         * Inicializa o dashboard e carrega os dados iniciais.
-         */
-        function initializeDashboard() {
-            try {
-                // 1. Injeta o foco da empresa
-                document.getElementById('app-focus').textContent = appState.focus;
-                
-                // 2. Preenche os inputs com o valor inicial do período de crescimento
-                document.getElementById('growth-period').value = appState.growthPeriodMonths;
-
-                // 3. Renderiza todas as tabelas e calcula as projeções iniciais
-                calculateProjections();
-                renderSpecialSessionDetails();
-                
-                // 4. Configura o estado inicial da interface
-                showSection('portfolio');
-            } catch (error) {
-                console.error("Erro fatal ao inicializar o dashboard:", error);
-                // Tenta pelo menos mostrar um erro na tela, se possível
-                document.body.innerHTML = '<div class="p-8 text-center text-red-600 bg-white rounded-lg shadow-xl mt-20"><h1>Erro Crítico ao Carregar o Aplicativo</h1><p>Por favor, verifique o console do navegador para mais detalhes.</p></div>';
-            }
+        function handleAssessorShareChange(v) {
+            const val = parseFloat(v) || 0;
+            appState.assessorRevenueSharePercent = val;
+            appState.guestPaymentSharePercent = val;
+            document.getElementById('guest-share-percent').value = val.toFixed(2);
+            updateAll();
         }
 
-        /**
-         * Renderiza o portfólio de produtos na tabela com inputs.
-         */
-        function renderPortfolioTable() {
-            const tbody = document.getElementById('portfolio-table-body');
-            tbody.innerHTML = ''; // Limpa o corpo da tabela
+        function handleGuestShareChange(v) {
+            const val = parseFloat(v) || 0;
+            appState.guestPaymentSharePercent = val;
+            appState.assessorRevenueSharePercent = val;
+            document.getElementById('assessor-share').value = val.toFixed(2);
+            updateAll();
+        }
 
+        function handleSpecialSessionChange() {
+            appState.specialParticipants = parseInt(document.getElementById('special-session-participants').value) || 0;
+            updateAll();
+        }
+
+        function handleGrowthPeriodChange(v) {
+            appState.growthPeriodMonths = parseInt(v) || 1;
+            updateAll();
+        }
+
+        function updateAll() {
+            let totalMax = 0;
             appState.portfolio.forEach(item => {
-                const row = document.createElement('tr');
-                row.className = 'hover:bg-gray-50';
-                row.innerHTML = `
-                    <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">${item.name}</td>
-                    
-                    <!-- Input de Preço -->
-                    <td class="px-6 py-4 text-sm text-right">
-                        <input type="number" id="${item.id}-price" value="${item.price}" min="0" oninput="handleInputChange('${item.id}', 'price', this.value)" class="input-field" />
-                    </td>
-
-                    <!-- Input de Capacidade -->
-                    <td class="px-6 py-4 text-sm text-right">
-                        <div class="flex items-center space-x-1">
-                            <input type="number" id="${item.id}-capacity" value="${item.capacity}" min="0" oninput="handleInputChange('${item.id}', 'capacity', this.value)" class="input-field text-right" style="width: 80px;" />
-                            <span class="text-xs text-gray-500">${item.unit}</span>
-                        </div>
-                    </td>
-
-                    <!-- Receita Calculada -->
-                    <td class="px-6 py-4 whitespace-nowrap text-sm font-bold text-secondary text-right">${formatCurrency(item.maxRevenue)}</td>
-                    
-                    <!-- Divisão -->
-                    <td class="px-6 py-4 whitespace-normal text-sm text-gray-600">${item.division}</td>
-                `;
-                tbody.appendChild(row);
+                const revenue = item.price * item.capacity;
+                totalMax += revenue;
+                const cell = document.getElementById(`res-${item.id}`);
+                if (cell) cell.textContent = formatCurrency(revenue);
             });
-        }
 
-        /**
-         * Renderiza a projeção de clientes e receita de forma dinâmica, mês a mês.
-         */
-        function renderDynamicProjectionTable() {
-            const tbody = document.getElementById('dynamic-projection-table-body');
-            tbody.innerHTML = '';
+            document.getElementById('max-revenue').textContent = formatCurrency(totalMax);
+            document.getElementById('total-revenue-footer').textContent = formatCurrency(totalMax);
+            document.getElementById('monthly-growth-target').textContent = formatCurrency(totalMax / appState.growthPeriodMonths);
             
-            if (appState.growthPeriodMonths === 0 || appState.growthPeriodMonths < 1) {
-                tbody.innerHTML = '<tr><td colspan="6" class="p-4 text-center text-red-500">O Período de Crescimento deve ser no mínimo 1 mês.</td></tr>';
-                return;
-            }
-
-            // 1. Calcula o crescimento mensal alvo para cada produto
-            const monthlyTargets = {};
-            appState.portfolio.forEach(item => {
-                // A taxa de crescimento mensal é a Capacidade Máxima dividida pelo Período de Crescimento
-                monthlyTargets[item.id] = item.capacity / appState.growthPeriodMonths;
-            });
+            const groupProduct = appState.portfolio.find(p => p.id === 'p3');
+            const sessionGross = groupProduct.price * appState.specialParticipants;
+            const sessionGuest = sessionGross * (appState.guestPaymentSharePercent / 100);
             
-            let currentClients = {
-                ebook: 0,
-                online: 0,
-                individual: 0,
-                group: 0
-            };
-            
-            // 2. Loop pelos meses
-            for (let month = 1; month <= appState.growthPeriodMonths; month++) {
-                let monthlyRevenue = 0;
-                
-                // Acumula clientes e calcula a receita do mês
-                appState.portfolio.forEach(item => {
-                    const monthlyIncrement = monthlyTargets[item.id];
-                    
-                    // Acumula clientes
-                    currentClients[item.id] += monthlyIncrement;
-
-                    // Garante que o último mês atinja exatamente a capacidade máxima
-                    // Usamos Math.ceil no último mês para evitar erros de ponto flutuante, mas a lógica de incremento já resolve a maior parte.
-                    if (month === appState.growthPeriodMonths) {
-                        currentClients[item.id] = item.capacity;
-                    }
-
-                    // Calcula a receita gerada pelos clientes acumulados (arredondando para 1 casa decimal para clientes, mas usando o valor real para receita)
-                    const clientsInMonth = Math.min(item.capacity, currentClients[item.id]);
-                    monthlyRevenue += clientsInMonth * item.price;
-                });
-                
-                // Arredonda a receita para 2 casas decimais para exibição
-                monthlyRevenue = Math.round(monthlyRevenue * 100) / 100;
-
-                const row = document.createElement('tr');
-                row.className = 'hover:bg-blue-50';
-                
-                // DESTAQUE DA LINHA: Usando tom de azul (secondary/10) em vez de verde/amarelo puro
-                if (month === appState.growthPeriodMonths) {
-                    row.classList.add('font-bold', 'bg-secondary/10', 'border-t-2', 'border-secondary');
-                }
-                
-                // Formata os clientes E-book e Online
-                const ebookClients = Math.min(appState.portfolio.find(p => p.id === 'ebook').capacity, currentClients.ebook).toFixed(1);
-                const onlineClients = Math.min(appState.portfolio.find(p => p.id === 'online').capacity, currentClients.online).toFixed(1);
-
-                // Formata os clientes Grupo e Individual na ordem correta
-                const groupClients = Math.min(appState.portfolio.find(p => p.id === 'group').capacity, currentClients.group).toFixed(1);
-                const individualClients = Math.min(appState.portfolio.find(p => p.id === 'individual').capacity, currentClients.individual).toFixed(1);
-
-                // O HTML da linha agora insere os valores na ordem correta: Mês | Ebook | Online | Grupo | Individual | Receita
-                row.innerHTML = `
-                    <td class="px-3 py-2 text-left text-sm font-medium text-gray-900">Mês ${month}</td>
-                    <td class="px-3 py-2 text-right text-sm text-gray-600">${ebookClients}</td>
-                    <td class="px-3 py-2 text-right text-sm text-gray-600">${onlineClients}</td>
-                    <td class="px-3 py-2 text-right text-sm text-gray-600">${groupClients}</td>
-                    <td class="px-3 py-2 text-right text-sm text-gray-600">${individualClients}</td>
-                    <td class="px-3 py-2 text-right text-sm font-extrabold text-secondary">${formatCurrency(monthlyRevenue)}</td>
-                `;
-                tbody.appendChild(row);
-            }
-        }
-
-
-        /**
-         * Renderiza os detalhes da sessão especial com convidado (Dados fixos do plano original).
-         */
-        function renderSpecialSessionDetails() {
-            const detailsDiv = document.getElementById('special-session-details');
-            const monthsList = document.getElementById('special-session-months');
-            
-            document.getElementById('guest-payment-fraction').textContent = appState.specialSession.guestPaymentFraction;
-
-            // Os valores da sessão especial são baseados no preço original (R$ 762/participante)
-            const price = 762.00;
-            const participants = 10;
-            const grossRevenue = price * participants; // 7620
-            const guestPayment = grossRevenue / 3; // 2540
-            const netRevenue = grossRevenue - guestPayment; // 5080
-
-            detailsDiv.innerHTML = `
-                <p>Receita Bruta da Sessão (10 participantes @ ${formatCurrency(price)}): <span class="font-bold text-gray-900">${formatCurrency(grossRevenue)}</span></p>
-                <p>Pagamento ao Convidado Colaborador (1/3): <span class="font-bold text-gray-700">${formatCurrency(guestPayment)}</span></p>
-                <p>Receita Líquida para Assessores (2/3): <span class="font-bold text-secondary">${formatCurrency(netRevenue)}</span></p>
+            document.getElementById('special-session-details').innerHTML = `
+                <div class="flex justify-between border-b pb-1"><span>Bruto da Sessão:</span><b>${formatCurrency(sessionGross)}</b></div>
+                <div class="flex justify-between border-b py-1"><span>Comissão Convidado (${appState.guestPaymentSharePercent}%):</span><b>${formatCurrency(sessionGuest)}</b></div>
+                <div class="flex justify-between pt-1 font-bold text-blue-900"><span>Líquido Assessoria:</span><b>${formatCurrency(sessionGross - sessionGuest)}</b></div>
             `;
 
-            monthsList.innerHTML = '';
-            appState.specialSession.months.forEach(month => {
-                const li = document.createElement('li');
-                li.textContent = month;
-                monthsList.appendChild(li);
+            renderDynamicProjectionTable();
+        }
+
+        function renderPortfolioTable() {
+            const tbody = document.getElementById('portfolio-table-body');
+            tbody.innerHTML = '';
+            appState.portfolio.forEach((item, idx) => {
+                const row = document.createElement('tr');
+                row.className = idx % 2 === 0 ? 'bg-white' : 'bg-gray-50/50';
+                row.innerHTML = `
+                    <td class="px-4 py-3 border-r col-nome font-semibold"><input type="text" value="${item.name}" oninput="handleInputChange('${item.id}', 'name', this.value)" class="input-field text-primary"></td>
+                    <td class="px-4 py-3 border-r col-preco"><input type="number" value="${item.price}" oninput="handleInputChange('${item.id}', 'price', this.value)" class="input-field text-center"></td>
+                    <td class="px-4 py-3 border-r col-cap"><input type="number" value="${item.capacity}" oninput="handleInputChange('${item.id}', 'capacity', this.value)" class="input-field text-center"></td>
+                    <td class="px-4 py-3 border-r col-un"><input type="text" value="${item.unit}" oninput="handleInputChange('${item.id}', 'unit', this.value)" class="input-field text-center italic"></td>
+                    <td id="res-${item.id}" class="px-4 py-3 text-right font-bold text-secondary col-total tracking-tight">${formatCurrency(item.price * item.capacity)}</td>
+                `;
+                tbody.appendChild(row);
             });
         }
 
-        /**
-         * Função para alternar entre as seções do dashboard.
-         */
-        function showSection(sectionId) {
-            // Esconde todas as seções de conteúdo
-            document.querySelectorAll('.content-section').forEach(section => {
-                section.classList.add('hidden');
-            });
-            // Mostra a seção desejada
-            document.getElementById(`${sectionId}-section`).classList.remove('hidden');
+        function renderDynamicProjectionTable() {
+            const head = document.getElementById('projection-header');
+            const body = document.getElementById('dynamic-projection-table-body');
+            
+            let headHtml = `<tr><th class="px-4 py-3 text-left border-r">Mês</th>`;
+            appState.portfolio.forEach(p => headHtml += `<th class="px-4 py-3 text-center border-r">${p.name}</th>`);
+            headHtml += `<th class="px-4 py-3 text-right">Faturamento Total</th></tr>`;
+            head.innerHTML = headHtml;
 
-            // Atualiza o estilo dos botões (abas)
-            document.querySelectorAll('.tab-button').forEach(button => {
-                if (button.dataset.section === sectionId) {
-                    button.classList.remove('bg-gray-200', 'text-gray-700', 'hover:bg-gray-300');
-                    button.classList.add('bg-primary', 'text-white', 'hover:bg-secondary');
-                } else {
-                    button.classList.remove('bg-primary', 'text-white', 'hover:bg-secondary');
-                    button.classList.add('bg-gray-200', 'text-gray-700', 'hover:bg-gray-300');
-                }
+            body.innerHTML = '';
+            for (let m = 1; m <= appState.growthPeriodMonths; m++) {
+                let monthlyTotal = 0;
+                let rowHtml = `<td class="px-4 py-2 font-black border-r text-gray-400">#${m}</td>`;
+                
+                appState.portfolio.forEach(p => {
+                    const currentVol = (p.capacity / appState.growthPeriodMonths) * m;
+                    monthlyTotal += currentVol * p.price;
+                    rowHtml += `<td class="px-4 py-2 text-center border-r text-gray-500 italic">${Math.floor(currentVol)}</td>`;
+                });
+
+                rowHtml += `<td class="px-4 py-2 text-right font-bold text-secondary bg-blue-50/30 border-l">${formatCurrency(monthlyTotal)}</td>`;
+                const tr = document.createElement('tr');
+                tr.className = "hover:bg-amber-50 transition-colors";
+                tr.innerHTML = rowHtml;
+                body.appendChild(tr);
+            }
+        }
+
+        function showSection(id) {
+            document.querySelectorAll('.content-section').forEach(s => s.classList.add('hidden'));
+            document.getElementById(`${id}-section`).classList.remove('hidden');
+            document.querySelectorAll('.tab-button').forEach(b => {
+                const active = b.dataset.section === id;
+                b.classList.toggle('bg-white', active);
+                b.classList.toggle('text-primary', active);
+                b.classList.toggle('border-t-primary', active);
+                b.classList.toggle('text-gray-400', !active);
             });
         }
 
-        // Inicia o dashboard ao carregar o DOM
-        document.addEventListener('DOMContentLoaded', initializeDashboard);
+        function saveScenario() {
+            const blob = new Blob([JSON.stringify(appState, null, 2)], { type: 'application/json' });
+            const a = document.createElement('a'); a.href = URL.createObjectURL(blob); a.download = `fnw_plano.json`; a.click();
+        }
 
+        function loadScenario(event) {
+            const reader = new FileReader();
+            reader.onload = (e) => {
+                appState = JSON.parse(e.target.result);
+                document.getElementById('growth-period').value = appState.growthPeriodMonths;
+                document.getElementById('assessor-share').value = appState.assessorRevenueSharePercent.toFixed(2);
+                document.getElementById('guest-share-percent').value = appState.guestPaymentSharePercent.toFixed(2);
+                document.getElementById('special-session-participants').value = appState.specialParticipants;
+                renderPortfolioTable();
+                updateAll();
+            };
+            reader.readAsText(event.target.files[0]);
+        }
+
+        document.addEventListener('DOMContentLoaded', () => {
+            const list = document.getElementById('special-session-months');
+            appState.specialMonths.forEach(m => {
+                list.innerHTML += `<li class="flex items-center space-x-2"><span class="w-2 h-2 bg-green-500 rounded-full"></span><span>${m}</span></li>`;
+            });
+            renderPortfolioTable();
+            updateAll();
+            showSection('portfolio');
+        });
     </script>
 </body>
 </html>
